@@ -5,6 +5,27 @@ import { COLORS, WEIGHTS } from "../../constants";
 import { formatPrice, pluralize, isNewShoe } from "../../utils";
 import Spacer from "../Spacer";
 
+const SALE_TYPES = {
+  "new-release": {
+    title: "Just Released!",
+    "--background-color": COLORS.secondary,
+    "--price-color": COLORS.gray[900],
+    "--text-decoration-line": "none",
+  },
+  "on-sale": {
+    title: "Sale",
+    "--background-color": COLORS.primary,
+    "--price-color": COLORS.gray[700],
+    "--text-decoration-line": "line-through",
+  },
+  default: {
+    title: "",
+    "--background-color": "transparent",
+    "--price-color": COLORS.gray[900],
+    "--text-decoration-line": "none",
+  },
+};
+
 const ShoeCard = ({
   slug,
   name,
@@ -31,19 +52,23 @@ const ShoeCard = ({
       ? 'new-release'
       : 'default'
 
+  const styles = SALE_TYPES[variant];
+
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
         <ImageWrapper>
+          <Flag style={styles}>{styles.title}</Flag>
           <Image alt="" src={imageSrc} />
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price style={styles}>{formatPrice(price)}</Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize("Color", numOfColors)}</ColorInfo>
+          {salePrice && <SalePrice>{formatPrice(salePrice)}</SalePrice>}
         </Row>
       </Wrapper>
     </Link>
@@ -61,11 +86,24 @@ const ImageWrapper = styled.div`
   position: relative;
 `;
 
+const Flag = styled.div`
+  position: absolute;
+  top: 12px;
+  right: -4px;
+  padding: 7px 9px 9px 10px;
+  font-weight: ${WEIGHTS.medium};
+  background-color: var(--background-color);
+  color: ${COLORS.white};
+  border-radius: 2px;
+`;
+
 const Image = styled.img`
   width: 100%;
 `;
 
 const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
   font-size: 1rem;
 `;
 
@@ -74,7 +112,10 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  color: var(--price-color);
+  text-decoration-line: var(--text-decoration-line);
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
